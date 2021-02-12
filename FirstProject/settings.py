@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # first 를 웹 앱으로 인식하도록 추가.
     'first',
     'second',
+    'third',
     'rest_framework'
 ]
 
