@@ -11,6 +11,32 @@
                 <a href="{% url 'delete' %}?id={{ item.id }}">
                     <button class="btn btn-danger">삭제하기</button>
                 </a>
+
+                <hr/>
+                <p>
+                    <a href="{% url 'review-create' restaurant_id=item.id %}">
+                        <button class="btn">리뷰남기기</button>
+                    </a>
+                </p>
+
+                {% for review in reviews %}
+                    <div class="card bg-light mb=3">
+                        <div class="card-header">
+                            <b>
+                                {{ review.point }}
+                            </b>점
+                            <a href="{% url 'review-delete' review_id=review.id restaurant_id=item.id %}">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <div>
+                            <p class="card-text">{{ review.comment }}</p>
+                        </div>
+                    </div>
+                    <br>
+                {% endfor %}
             </div>
         </div>
     </div>
