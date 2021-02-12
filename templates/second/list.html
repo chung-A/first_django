@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for item in items %}
+    <div>
+        <br>
+        <h4>
+            {{ item.title }}
+        </h4>
+        <br>
+
+        <p>
+            {{ item.content }}
+        </p>
+    </div>
+
+    {% endfor %}
+</body>
+</html>
