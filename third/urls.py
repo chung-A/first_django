@@ -5,7 +5,7 @@ urlpatterns = [
     path('select/', views.select, name="list"),
     path('create/', views.create, name="create"),
     path('update/', views.update, name="update"),
-    path('delete/', views.delete, name="delete"),
+    path('delete/<int:id>', views.delete, name="delete"),
 
     # path('detail/', views.detail, name="detail"),
     path('restaurant/<int:id>', views.detail, name="detail"),

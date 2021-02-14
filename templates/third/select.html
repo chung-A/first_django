@@ -9,6 +9,14 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ item.name }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{ item.address }}</h6>
+                        <p class="card-text">리뷰: {{ item.reviews_count }}개</p>
+                        <p class="card-text">평점:
+                            {% if item.average_point is None %}
+                                0
+                            {% else %}
+                                {{ item.average_point|floatformat }}
+                            {% endif %}
+                        점</p>
                         <p class="card-text">pk: {{ item.pk }}</p>
                         <a href="{% url 'detail' id=item.id %}" class="card-link">자세히 보기</a>
                         <a href="{% url 'update' %}?id={{ item.id }}" class="card-link">수정하기</a>

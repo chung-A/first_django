@@ -1,12 +1,17 @@
 from django.core.paginator import Paginator
-from django.shortcuts import render, get_object_or_404, redirect
-from third.models import Restaurant, Review
-from third.forms import RestaurantForm, ReviewForm
+from django.db.models import Count, Avg
 from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
+
+from third.forms import RestaurantForm, ReviewForm, UpdateRestaurantForm
+from third.models import Restaurant, Review
 
 
 def select(request):
-    restaurants = Restaurant.objects.all()
+    # 조인된 대상 객체명을 소문자로 적어주면 된다.
+    restaurants = Restaurant.objects.all() \
+        .annotate(reviews_count=Count('review')) \
+        .annotate(average_point=Avg('review__point'))
 
     paginator = Paginator(restaurants, 5)
     # third/select?page=2
@@ -42,8 +47,9 @@ def update(request):
         # DB 에서 불러온 기존 데이터를 업데이트
         # item = Restaurant.objects.get(pk=request.POST.get('id'))
         item = get_object_or_404(Restaurant, pk=request.POST.get('id'))
-        form = RestaurantForm(request.POST, instance=item)
-        if form.is_valid():
+        password = request.POST.get('password', '')
+        form = UpdateRestaurantForm(request.POST, instance=item)
+        if form.is_valid() and password == item.password:
             item = item.save()
     # 뷰 뿌리기
     elif request.method == "GET":
@@ -63,11 +69,14 @@ def detail(request, id):
     return HttpResponseRedirect('/third/select/')
 
 
-def delete(request):
-    if 'id' in request.GET:
-        item = get_object_or_404(Restaurant, pk=request.GET.get('id'))
-        item.delete()
-    return HttpResponseRedirect('/third/select/')
+def delete(request, id):
+    item = get_object_or_404(Restaurant, pk=id)
+    if request.method == 'POST' and 'password' in request.POST:
+        if item.password == request.POST.get('password') or item.password is None:
+            item.delete()
+            return redirect('list')
+        return redirect('detail', id=id)
+    return render(request, 'third/delete.html', {'item': item})
 
     # for i in range(0, 10):
     #     restaurant = Restaurant(name="음식점" + str(i), address="주소 " + str(i))
@@ -95,12 +104,12 @@ def review_delete(request, restaurant_id, review_id):
 
 def review_list(request):
     reviews = Review.objects.all().select_related().order_by('-created_at')
-    paginator = Paginator(reviews,10)
+    paginator = Paginator(reviews, 10)
 
     page = request.GET.get('page')
     items = paginator.get_page(page)
 
-    context={
-        'reviews':items,
+    context = {
+        'reviews': items,
     }
     return render(request, 'third/review_list.html', context)
