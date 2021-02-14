@@ -91,3 +91,16 @@ def review_delete(request, restaurant_id, review_id):
         item = get_object_or_404(Review, pk=review_id)
         item.delete()
     return redirect('detail', id=restaurant_id)
+
+
+def review_list(request):
+    reviews = Review.objects.all().select_related().order_by('-created_at')
+    paginator = Paginator(reviews,10)
+
+    page = request.GET.get('page')
+    items = paginator.get_page(page)
+
+    context={
+        'reviews':items,
+    }
+    return render(request, 'third/review_list.html', context)
